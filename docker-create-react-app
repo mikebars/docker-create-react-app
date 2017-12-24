@@ -1,0 +1,25 @@
+#!/bin/sh
+
+CONTAINER_NAME=$1
+
+if [ -z "$CONTAINER_NAME" ]
+then
+  exit 1
+fi
+
+CONTAINER_ID=`docker ps -aqf "name=$CONTAINER_NAME"`
+
+if [ ! -z "$CONTAINER_ID" ]
+then
+  docker rm $CONTAINER_NAME
+fi
+
+docker run -it --name $CONTAINER_NAME node yarn create react-app $CONTAINER_NAME
+
+CONTAINER_ID=`docker ps -aqf "name=$CONTAINER_NAME"`
+
+if [ ! -z "$CONTAINER_ID" ]
+then
+  docker cp $CONTAINER_ID:/$CONTAINER_NAME .
+  docker rm $CONTAINER_NAME
+fi
